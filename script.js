@@ -134,6 +134,7 @@ async function handleMealClick(e) {
             let recentMeals = JSON.parse(localStorage.getItem("recentMeals")) || [];
 
             recentMeals.unshift({
+                id: meal.idMeal,
                 name: meal.strMeal,
                 img: meal.strMealThumb
             });
@@ -196,7 +197,7 @@ function showRecentSearches(){
     const data = JSON.parse(localStorage.getItem("recent")) || [];
 
     recentSearchBox.innerHTML = data.map(i => `
-        <span style="
+        <span class="recent-search-item" style="
             background:#ff7e5f;
             color:white;
             padding:5px 10px;
@@ -206,15 +207,128 @@ function showRecentSearches(){
             cursor:pointer;
         ">${i}</span>
     `).join("");
-}
 
+    document.querySelectorAll(".recent-search-item").forEach(item => {
+        item.addEventListener("click", () => {
+            searchInput.value = item.textContent;
+            searchMeals();
+        });
+    });
+}
 function showRecentMeals(){
+    recentMealsBox.addEventListener("click", (e) => {
+        const mealEl = e.target.closest(".recent-meal");
+        if (!mealEl) return;
+
+        const mealId = mealEl.getAttribute("data-id");
+
+        openMealById(mealId);
+    });
     const data = JSON.parse(localStorage.getItem("recentMeals")) || [];
 
     recentMealsBox.innerHTML = data.map(i => `
-        <div style="display:inline-block; margin:5px; text-align:center;">
+        <div class="recent-meal" data-id="${i.id}"
+            style="display:inline-block; margin:5px; text-align:center; cursor:pointer;">
+            
             <img src="${i.img}" width="80" style="border-radius:10px;"><br>
             <small>${i.name}</small>
         </div>
     `).join("");
+
+    // CLICK EVENT 🔥
+    document.querySelectorAll(".recent-meal").forEach(item => {
+        item.addEventListener("click", () => {
+            openMealById(item.dataset.id);
+        });
+    });
 }
+async function openMealById(mealId){
+    try {
+        const response = await fetch(`${LOOKUP_URL}${mealId}`);
+        const data = await response.json();
+
+        if (data.meals && data.meals[0]) {
+            const meal = data.meals[0];
+
+            const ingredients = [];
+
+            for (let i = 1; i <= 20; i++) {
+                if (meal[`strIngredient${i}`]) {
+                    ingredients.push({
+                        ingredient: meal[`strIngredient${i}`],
+                        measure: meal[`strMeasure${i}`]
+                    });
+                }
+            }
+
+            mealDetailsContent.innerHTML = `
+                <img src="${meal.strMealThumb}" class="meal-details-img">
+                <h2 class="meal-details-title">${meal.strMeal}</h2>
+
+                <div class="meal-details-category">
+                    <span>${meal.strCategory || "Uncategorized"}</span>
+                </div>
+
+                <div class="meal-details-instructions">
+                    <h3>Instructions</h3>
+                    <p>${meal.strInstructions}</p>
+                </div>
+
+                <div class="meal-details-ingredients">
+                    <h3>Ingredients</h3>
+                    <ul class="ingredients-list">
+                        ${ingredients.map(item => `
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                ${item.measure} ${item.ingredient}
+                            </li>
+                        `).join("")}
+                    </ul>
+                </div>
+
+                ${meal.strYoutube ? `
+                    <a href="${meal.strYoutube}" target="_blank" class="youtube-link">
+                        <i class="fab fa-youtube"></i> Watch Video
+                    </a>` : ""}
+            `;
+
+            mealDetails.classList.remove("hidden");
+            mealDetails.scrollIntoView({ behavior: "smooth" });
+        }
+    } catch (error) {
+        errorContainer.textContent = "Could not load recipe details.";
+        errorContainer.classList.remove("hidden");
+    }
+}
+async function loadRandomMeals(){
+    mealsContainer.innerHTML = "";
+    resultHeading.textContent = "Popular Recipes";
+
+    for (let i = 0; i < 5; i++) {
+        const res = await fetch(`${BASE_URL}random.php`);
+        const data = await res.json();
+
+        mealsContainer.innerHTML += `
+        <div class="meal" data-meal-id="${data.meals[0].idMeal}">
+            <div class="meal-img">
+                <img src="${data.meals[0].strMealThumb}">
+                <span class="badge">Random</span>
+            </div>
+            <div class="meal-info">
+                <h3>${data.meals[0].strMeal}</h3>
+            </div>
+        </div>`;
+    }
+}
+window.addEventListener("DOMContentLoaded", () => {
+
+    const hasSearch = localStorage.getItem("recent");
+    const hasView = localStorage.getItem("recentMeals");
+
+    if (!hasSearch && !hasView) {
+        loadRandomMeals();
+    } else {
+        showRecentSearches();
+        showRecentMeals();
+    }
+});
