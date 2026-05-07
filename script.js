@@ -153,13 +153,13 @@ async function handleMealClick(e) {
             }
 
             mealDetailsContent.innerHTML = `
-                <img src="${meal.strMealThumb}" class="meal-details-img">
-                <h2 class="meal-details-title">${meal.strMeal}</h2>
+                <img ${meal.strMealThumbXTERNAL_FRAGMENT"class="} class="              
+                <h2 class="meal-details-titlesrc="EXTERNAL_FRAGMENT"">${meal.strMeal}</h2>
 
-                <div class="meal-details-category">
-                    <span>${meal.strCategory || "Uncategorized"}</span>
-                </div>
-
+                   <div class="meal-details-category">
+                        <span>${meal.strCategory || "Uncategorized"}</span>
+                   </div>
+                
                 <div class="meal-details-instructions">
                     <h3>Instructions</h3>
                     <p>${meal.strInstructions}</p>

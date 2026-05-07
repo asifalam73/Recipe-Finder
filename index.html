@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <title>Recipe Finder</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/0b83a9bad7.js" crossorigin="anonymous"></script>
+    <link href="style.css" rel="stylesheet">
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/0b83a9bad7.js"></script>
 </head>
 <body>
 <div class="container">
@@ -17,24 +17,23 @@
     </header>
     <p class="api-link">Data from <a href="https://www.themealdb.com/api.php">TheMealDB 👨‍🍳</a></p>
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search for meals or keywords">
+        <input id="search-input" placeholder="Search for meals or keywords" type="text">
         <button id="search-btn">Search</button>
     </div>
 
     <div id="recent-searches"></div>
     <div id="recent-meals"></div>
 
-    <div id="error-container" class="hidden">
+    <div class="hidden" id="error-container">
         <p>No meals found. try another search item!</p>
     </div>
 
     <div id="result-heading"></div>
 
-    <div id="meals" class="meals-container"></div>
+    <div class="meals-container" id="meals"></div>
 
-    <div id="meals-details" class="hidden">
+    <div class="hidden" id="meals-details">
         <button id="back-btn"><i class="fas fa-arrow-left"></i></button>
-
         <div class="meal-details-content"></div>
     </div>
 </div>
